@@ -26,7 +26,7 @@ public class ModItems {
     
     // Food Items
     public static final Item CHICKEN_LEG = registerItem("chicken_leg", new Item(new FabricItemSettings().food(RAW_CHICKEN_COMPONENT)));   
-    
+    public static final Item RED_CHICKEN_SPAWN_EGG = registerItem("red_chicken_spawn_egg", SpawnEgg.RED_CHICKEN_SPAWN_EGG);
     
 
     private static Item registerItem(String name, Item item) {
@@ -36,6 +36,7 @@ public class ModItems {
 
     private static void addItemsToIngredients(FabricItemGroupEntries entries) {
         entries.add(CHICKEN_LEG);
+        entries.add(RED_CHICKEN_SPAWN_EGG);
     }
     public static void registerModItems() {
         Chicken.LOGGER.info("Registering items " + Chicken.MOD_ID);

@@ -19,19 +19,34 @@ import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
+import java.util.Random;
 
-public class RedChickenEntity extends PathAwareEntity implements GeoEntity{
+
+public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
 
     private final AnimatableInstanceCache geoCache = GeckoLibUtil.createInstanceCache(this);
+    private static final Random RANDOM = new Random();
 
-    public RedChickenEntity(EntityType<? extends PathAwareEntity> entityType, World world){
+    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().then("animation.model.walk", Animation.LoopType.LOOP);
+    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().then("animation.model.idle", Animation.LoopType.LOOP);
+    protected static final RawAnimation TAIL_ANIM = RawAnimation.begin().then("animation.model.idle_tail", Animation.LoopType.LOOP);
+
+    private boolean tail = false;
+    private int tailLength = 100;
+    private int randomTailInterval = RANDOM.nextInt(181) + 20;
+    public RedChickenEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
     }
 
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller",0,this::predicate));
+    private void decreaseTailLength() {
+        tailLength--;
+        if (tailLength <= 0) {
+            tail = false;
+            tailLength = 100;
+        }
+    }
+    private void activateTail() {
+        tail = true;
 
     }
 
@@ -39,25 +54,40 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity{
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
-//        this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-//        this.goalSelector.add(3, new TemptGoal(this, 1.0, BREEDING_INGREDIENT, false));
-//        this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
     }
 
-    private <T extends GeoAnimatable> PlayState predicate(AnimationState<T> tAnimationState){
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        controllers.add(new AnimationController<>(this, "Moving", 1, this::moveController));
+        controllers.add(new AnimationController<>(this, "Idle", 1, this::idleController));
+        controllers.add(new AnimationController<>(this, "Tail", 0, this::tailController));
+    }
 
-        if(tAnimationState.isMoving()){
-            tAnimationState.getController().setAnimation(RawAnimation.begin().then("animation.model.walk", Animation.LoopType.LOOP));
+    protected <E extends RedChickenEntity> PlayState moveController(final AnimationState<E> event) {
+        if (event.isMoving()) {
+            return event.setAndContinue(WALK_ANIM);
         }
-        else {
-            tAnimationState.getController().setAnimation(RawAnimation.begin().then("animation.model.idle", Animation.LoopType.LOOP));
+        return PlayState.STOP;
+    }
+
+    protected <E extends RedChickenEntity> PlayState idleController(final AnimationState<E> event) {
+        if (!event.isMoving()) {
+            if(this.age %  randomTailInterval == 0 && !tail){
+                activateTail();
+            }
+            return event.setAndContinue(IDLE_ANIM);
         }
-
-        return PlayState.CONTINUE;
-
+        return PlayState.STOP;
+    }
+    protected <E extends RedChickenEntity> PlayState tailController(final AnimationState<E> event) {
+        if (tail) {
+            decreaseTailLength();
+            return event.setAndContinue(TAIL_ANIM);
+        }
+        return PlayState.STOP;
     }
 
     @Override
@@ -72,8 +102,4 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity{
                 .add(EntityAttributes.GENERIC_ARMOR, 0.5f)
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2);
     }
-
-
-
-    
 }

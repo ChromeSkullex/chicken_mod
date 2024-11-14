@@ -36,7 +36,7 @@
 				},
 				{
 					"name": "r_wing",
-					"parent": "l_wing",
+					"parent": "wing",
 					"pivot": [1.7, 5, -0.5],
 					"cubes": [
 						{

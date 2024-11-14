@@ -1,4 +1,4 @@
-package chromeskullex.chicken.entity.client;
+package chromeskullex.chicken.entity.client.model;
 
 import chromeskullex.chicken.Chicken;
 import chromeskullex.chicken.entity.custom.RedChickenEntity;

@@ -250,7 +250,7 @@
 			}
 		},
 		"animation.model.idle_tail": {
-			"loop": false,
+			"loop": true,
 			"animation_length": 0.6667,
 			"bones": {
 				"tail": {
