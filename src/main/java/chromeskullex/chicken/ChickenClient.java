@@ -1,6 +1,6 @@
 package chromeskullex.chicken;
 
-import chromeskullex.chicken.entity.client.RedChickenRenderer;
+import chromeskullex.chicken.entity.client.renderer.RedChickenRenderer;
 import chromeskullex.chicken.entity.ModEntries;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
