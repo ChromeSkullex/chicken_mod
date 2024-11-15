@@ -3,9 +3,14 @@ package chromeskullex.chicken.entity.client.model;
 import chromeskullex.chicken.Chicken;
 import chromeskullex.chicken.entity.custom.RedChickenEntity;
 import net.minecraft.util.Identifier;
+import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.model.GeoModel;
 
-public class RedChickenModel extends GeoModel<RedChickenEntity>{
+public class RedChickenModel extends DefaultedEntityGeoModel<RedChickenEntity> {
+
+    public RedChickenModel() {
+        super(new Identifier(Chicken.MOD_ID, "red_chicken"), true);
+    }
 
     @Override
     public Identifier getModelResource(RedChickenEntity animatable) {

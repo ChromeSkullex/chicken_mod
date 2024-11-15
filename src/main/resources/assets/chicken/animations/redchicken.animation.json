@@ -280,6 +280,62 @@
 					}
 				}
 			}
+		},
+		"animation.model.flapping": {
+			"loop": true,
+			"animation_length": 0.5,
+			"bones": {
+				"l_wing": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [0, 0, 90],
+							"easing": "easeInOutCirc"
+						},
+						"0.5": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"r_wing": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						},
+						"0.25": {
+							"vector": [0, 0, -90],
+							"easing": "easeInOutCirc"
+						},
+						"0.5": {
+							"vector": [0, 0, 0],
+							"easing": "linear"
+						}
+					}
+				},
+				"body": {
+					"rotation": {
+						"vector": [-12.5, 0, 0],
+						"easing": "linear"
+					}
+				},
+				"feet2": {
+					"rotation": {
+						"vector": [22.5, 0, 0],
+						"easing": "linear"
+					}
+				},
+				"l_feet": {
+					"rotation": {
+						"vector": [22.5, 0, 0],
+						"easing": "linear"
+					}
+				}
+			}
 		}
 	},
 	"geckolib_format_version": 2
