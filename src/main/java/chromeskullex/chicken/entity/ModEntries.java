@@ -1,6 +1,6 @@
 package chromeskullex.chicken.entity;
 import chromeskullex.chicken.Chicken;
-import chromeskullex.chicken.entity.custom.RedChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.RedChickenEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;

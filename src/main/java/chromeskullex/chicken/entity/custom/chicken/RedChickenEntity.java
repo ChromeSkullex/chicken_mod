@@ -1,26 +1,30 @@
-package chromeskullex.chicken.entity.custom;
+package chromeskullex.chicken.entity.custom.chicken;
 
 import chromeskullex.chicken.Chicken;
+import chromeskullex.chicken.entity.AI.AILookAtEntity;
+import chromeskullex.chicken.entity.AI.AISleep;
+import chromeskullex.chicken.entity.AI.AIWonderAround;
 import chromeskullex.chicken.entity.ModEntries;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.LightType;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.Animation;
@@ -41,22 +45,35 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().then("animation.model.idle", Animation.LoopType.LOOP);
     protected static final RawAnimation TAIL_ANIM = RawAnimation.begin().then("animation.model.idle_tail", Animation.LoopType.LOOP);
     protected static final RawAnimation FLAP_ANIM = RawAnimation.begin().then("animation.model.flapping", Animation.LoopType.LOOP);
+    protected static final RawAnimation SLEEP_ANIM = RawAnimation.begin().then("animation.model.sleep", Animation.LoopType.LOOP);
 
+    // Animation Variables
     private boolean tail = false;
     private int tailLength = 100;
+    private boolean isFlapping = false;
     private int randomTailInterval = RANDOM.nextInt(181) + 20;
+    public World world;
+    private static final TrackedData<Boolean> SLEEPING = DataTracker.registerData(RedChickenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
+    // Chicken Velocity for Falling
     public float flapProgress;
     public float maxWingDeviation;
     public float prevMaxWingDeviation;
     public float prevFlapProgress;
     public float flapSpeed = 1.0F;
-    public boolean isFlapping = false;
 
-
-    public RedChickenEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
-        super(entityType, world);
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        this.dataTracker.startTracking(SLEEPING, false);
     }
+
+    public RedChickenEntity(EntityType<? extends PathAwareEntity> entityType, World serverWorld) {
+        super(entityType, serverWorld);
+        world = serverWorld;
+    }
+
+
 
     private void decreaseTailLength() {
         tailLength--;
@@ -67,10 +84,14 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     }
     private void activateTail() {
         tail = true;
-
-
     }
 
+    public void setSleeping(boolean sleeping) {
+        this.dataTracker.set(SLEEPING, sleeping);
+    }
+    public boolean isSleeping() {
+        return this.dataTracker.get(SLEEPING);
+    }
     @Override
     public void tickMovement(){
         super.tickMovement();
@@ -106,9 +127,11 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.add(5, new AIWonderAround(this, 1.0));
+        this.goalSelector.add(6, new AILookAtEntity(this, PlayerEntity.class, 6.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
+        this.goalSelector.add(8, new AISleep(this, this.getBlockPos()));
+
     }
 
     @Override
@@ -117,6 +140,7 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "Idle", 1, this::idleController));
         controllers.add(new AnimationController<>(this, "Tail", 0, this::tailController));
         controllers.add(new AnimationController<>(this, "Flap", 0, this::flappingController));
+        controllers.add(new AnimationController<>(this, "Sleep", 0, this::sleepController));
 
 
     }
@@ -129,7 +153,7 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     }
 
     protected <E extends RedChickenEntity> PlayState idleController(final AnimationState<E> event) {
-        if (!event.isMoving()) {
+        if (!event.isMoving() && !this.isSleeping()) {
             if(this.age %  randomTailInterval == 0 && !tail){
                 activateTail();
             }
@@ -138,15 +162,24 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         return PlayState.STOP;
     }
     protected <E extends RedChickenEntity> PlayState tailController(final AnimationState<E> event) {
-        if (tail) {
+        if (tail && !this.isSleeping()) {
             decreaseTailLength();
             return event.setAndContinue(TAIL_ANIM);
         }
         return PlayState.STOP;
     }
     protected <E extends RedChickenEntity> PlayState flappingController(final AnimationState<E> event) {
-        if (isFlapping) {
+        if (isFlapping  && !this.isSleeping()) {
             return event.setAndContinue(FLAP_ANIM);
+        }
+        return PlayState.STOP;
+    }
+
+
+    protected <E extends RedChickenEntity> PlayState sleepController(final AnimationState<E> event) {
+
+        if (this.isSleeping()) {
+            return event.setAndContinue(SLEEP_ANIM);
         }
         return PlayState.STOP;
     }

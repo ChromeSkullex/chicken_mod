@@ -1,10 +1,9 @@
 package chromeskullex.chicken.entity.client.model;
 
 import chromeskullex.chicken.Chicken;
-import chromeskullex.chicken.entity.custom.RedChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.RedChickenEntity;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
-import software.bernie.geckolib.model.GeoModel;
 
 public class RedChickenModel extends DefaultedEntityGeoModel<RedChickenEntity> {
 
