@@ -4,8 +4,9 @@
     <img src="https://i.imgur.com/jbmZdOj.jpeg" alt="Family of Chickens"/>
     </p>
     <p align="center">
-    <img src="https://img.shields.io/github/directory-file-count/ChromeSkullex/chicken_mod?style=for-the-badge?logo=Files" alt="Release" height="20"/>
-    <img src="https://img.shields.io/github/commit-activity/w/ChromeSkullex/chicken_mod?style=for-the-badge?logo=GitHub"
+    <img src="https://img.shields.io/github/directory-file-count/ChromeSkullex/chicken_mod?style=for-the-badge&color=yellow" alt="Release" height="20"/>
+    <img src="https://img.shields.io/github/commit-activity/w/ChromeSkullex/chicken_mod?style=for-the-badge&logo=github&color=yellow
+    "
     alt="Commits" height="20"/>
     </p>
     <p align="center">
