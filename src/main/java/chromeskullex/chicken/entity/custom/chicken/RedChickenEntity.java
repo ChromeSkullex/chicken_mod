@@ -1,26 +1,17 @@
-package chromeskullex.chicken.entity.custom;
+package chromeskullex.chicken.entity.custom.chicken;
 
 import chromeskullex.chicken.Chicken;
 import chromeskullex.chicken.entity.ModEntries;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.passive.ChickenEntity;
+import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.Animation;
@@ -30,9 +21,9 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Random;
+import static chromeskullex.chicken.entity.ModEntries.RED_CHICKEN;
 
-
-public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
+public class RedChickenEntity extends CustomChickenEntity implements GeoEntity {
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final Random RANDOM = new Random();
@@ -41,23 +32,31 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().then("animation.model.idle", Animation.LoopType.LOOP);
     protected static final RawAnimation TAIL_ANIM = RawAnimation.begin().then("animation.model.idle_tail", Animation.LoopType.LOOP);
     protected static final RawAnimation FLAP_ANIM = RawAnimation.begin().then("animation.model.flapping", Animation.LoopType.LOOP);
+    protected static final RawAnimation SLEEP_ANIM = RawAnimation.begin().then("animation.model.sleep", Animation.LoopType.LOOP);
 
+    // Animation Variables
     private boolean tail = false;
     private int tailLength = 100;
+    private boolean isFlapping = false;
     private int randomTailInterval = RANDOM.nextInt(181) + 20;
+    public World world;
 
+    // Chicken Velocity for Falling
     public float flapProgress;
     public float maxWingDeviation;
     public float prevMaxWingDeviation;
     public float prevFlapProgress;
     public float flapSpeed = 1.0F;
-    public boolean isFlapping = false;
 
 
-    public RedChickenEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
-        super(entityType, world);
+    @Override
+    @Nullable
+    public RedChickenEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
+        return (RedChickenEntity) RED_CHICKEN.create(serverWorld);
     }
 
+
+    // Animation for Tail (Maybe changed to a goal)
     private void decreaseTailLength() {
         tailLength--;
         if (tailLength <= 0) {
@@ -67,16 +66,22 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
     }
     private void activateTail() {
         tail = true;
-
-
     }
 
+
+
+    // Constructor
+    public RedChickenEntity(EntityType<? extends CustomChickenEntity> entityType, World serverWorld) {
+        super(entityType, serverWorld);
+        world = serverWorld;
+    }
+
+
+    // Taking from ChickenEntity, may need revision
     @Override
     public void tickMovement(){
         super.tickMovement();
-
         this.fallDistance = 0.0F; // Chicken does not take Fall Damage
-
 
         this.prevFlapProgress = this.flapProgress;
         this.prevMaxWingDeviation = this.maxWingDeviation;
@@ -102,13 +107,11 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
 
     }
 
+    // Geo Animations
+
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     @Override
@@ -117,7 +120,7 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         controllers.add(new AnimationController<>(this, "Idle", 1, this::idleController));
         controllers.add(new AnimationController<>(this, "Tail", 0, this::tailController));
         controllers.add(new AnimationController<>(this, "Flap", 0, this::flappingController));
-
+        controllers.add(new AnimationController<>(this, "Sleep", 5, this::sleepController));
 
     }
 
@@ -127,9 +130,8 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         }
         return PlayState.STOP;
     }
-
     protected <E extends RedChickenEntity> PlayState idleController(final AnimationState<E> event) {
-        if (!event.isMoving()) {
+        if (!event.isMoving() && !this.isSleeping()) {
             if(this.age %  randomTailInterval == 0 && !tail){
                 activateTail();
             }
@@ -138,7 +140,7 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         return PlayState.STOP;
     }
     protected <E extends RedChickenEntity> PlayState tailController(final AnimationState<E> event) {
-        if (tail) {
+        if (tail && !this.isSleeping()) {
             decreaseTailLength();
             return event.setAndContinue(TAIL_ANIM);
         }
@@ -150,22 +152,11 @@ public class RedChickenEntity extends PathAwareEntity implements GeoEntity {
         }
         return PlayState.STOP;
     }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
+    protected <E extends RedChickenEntity> PlayState sleepController(final AnimationState<E> event) {
+        if (this.isSleeping()) {
+            return event.setAndContinue(SLEEP_ANIM);
+        }
+        return PlayState.STOP;
     }
 
-    public static DefaultAttributeContainer.Builder createRedChickenAttributes() {
-        return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 15)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.2f)
-                .add(EntityAttributes.GENERIC_ARMOR, 0.5f)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2);
-    }
-
-    @Nullable
-    public RedChickenEntity createChild(ServerWorld world, PathAwareEntity entity){
-        return (RedChickenEntity) ModEntries.RED_CHICKEN.create(world);
-    }
 }
