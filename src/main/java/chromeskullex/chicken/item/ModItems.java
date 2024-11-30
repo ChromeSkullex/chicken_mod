@@ -30,6 +30,7 @@ public class ModItems {
     // Spawn Egg
     public static final Item RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG = registerItem("rhode_island_rooster_spawn_egg", SpawnEgg.RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG_FACTORY);
     public static final Item RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG = registerItem("rhode_island_hen_spawn_egg", SpawnEgg.RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG_FACTORY);
+    public static final Item RHODE_ISLAND_RED_CHICK_SPAWN_EGG = registerItem("rhode_island_chick_spawn_egg", SpawnEgg.RHODE_ISLAND_RED_CHICK_SPAWN_EGG_FACTORY);
 
 
     private static Item registerItem(String name, Item item) {
@@ -41,6 +42,7 @@ public class ModItems {
         entries.add(CHICKEN_LEG);
         entries.add(RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG);
         entries.add(RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG);
+        entries.add(RHODE_ISLAND_RED_CHICK_SPAWN_EGG);
     }
     public static void registerModItems() {
         Chicken.LOGGER.info("Registering items " + Chicken.MOD_ID);

@@ -18,4 +18,10 @@ public class SpawnEgg {
             0x0b120e,
             new FabricItemSettings()
     );
+    public static final Item RHODE_ISLAND_RED_CHICK_SPAWN_EGG_FACTORY = new SpawnEggItem(
+            MobEntries.RHODE_ISLAND_CHICK_CHICKEN,
+            0xc9a27f,
+            0xa36f49,
+            new FabricItemSettings()
+    );
 }
