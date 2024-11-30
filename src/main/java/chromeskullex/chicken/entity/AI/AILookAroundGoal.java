@@ -1,15 +1,13 @@
 package chromeskullex.chicken.entity.AI;
 
-import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.BaseChickenEntity;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 
 public class AILookAroundGoal extends LookAroundGoal {
 
-    private final CustomChickenEntity chicken;
+    private final BaseChickenEntity chicken;
 
-    public AILookAroundGoal(CustomChickenEntity mob) {
+    public AILookAroundGoal(BaseChickenEntity mob) {
         super(mob);
         this.chicken = mob;
 
