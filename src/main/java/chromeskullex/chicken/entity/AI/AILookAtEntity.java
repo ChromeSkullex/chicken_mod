@@ -1,5 +1,7 @@
 package chromeskullex.chicken.entity.AI;
 
+import chromeskullex.chicken.Chicken;
+import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -8,13 +10,15 @@ import net.minecraft.entity.player.PlayerEntity;
 
 public class AILookAtEntity extends LookAtEntityGoal {
 
-    public AILookAtEntity(MobEntity mob, Class<? extends LivingEntity> targetType, float range) {
+    private final CustomChickenEntity chicken;
+    public AILookAtEntity(CustomChickenEntity mob, Class<? extends LivingEntity> targetType, float range) {
         super(mob, targetType, range);
+        this.chicken = mob;
     }
 
     @Override
     public boolean canStart() {
-        if (!mob.isSleeping()){
+        if (!chicken.isSleeping()){
             if (this.mob.getRandom().nextFloat() >= this.chance) {
                 return false;
             } else {

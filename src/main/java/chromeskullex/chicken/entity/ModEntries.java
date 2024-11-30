@@ -12,10 +12,14 @@ import net.minecraft.util.Identifier;
 
 
 public class ModEntries {
-    public static EntityType<RedChickenEntity> RED_CHICKEN = Registry.register(
-        Registries.ENTITY_TYPE,
-        new Identifier(Chicken.MOD_ID, "red_chicken"),
-        FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RedChickenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.7F)).build()
-    );
+    public static EntityType<RedChickenEntity> RED_CHICKEN;
+
+    static {
+        RED_CHICKEN = Registry.register(
+                Registries.ENTITY_TYPE,
+                new Identifier(Chicken.MOD_ID, "red_chicken"),
+                FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RedChickenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.7F)).build()
+        );
+    }
 
 }
