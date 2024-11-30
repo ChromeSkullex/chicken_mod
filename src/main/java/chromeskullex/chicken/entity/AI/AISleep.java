@@ -2,12 +2,8 @@ package chromeskullex.chicken.entity.AI;
 
 import chromeskullex.chicken.Chicken;
 import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
-import chromeskullex.chicken.entity.custom.chicken.RedChickenEntity;
-import net.minecraft.block.Block;
-import net.minecraft.client.MinecraftClient;
+
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

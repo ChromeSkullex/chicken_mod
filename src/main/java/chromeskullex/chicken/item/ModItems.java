@@ -25,9 +25,12 @@ public class ModItems {
 
     
     // Food Items
-    public static final Item CHICKEN_LEG = registerItem("chicken_leg", new Item(new FabricItemSettings().food(RAW_CHICKEN_COMPONENT)));   
-    public static final Item RED_CHICKEN_SPAWN_EGG = registerItem("red_chicken_spawn_egg", SpawnEgg.RED_CHICKEN_SPAWN_EGG);
-    
+    public static final Item CHICKEN_LEG = registerItem("chicken_leg", new Item(new FabricItemSettings().food(RAW_CHICKEN_COMPONENT)));
+
+    // Spawn Egg
+    public static final Item RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG = registerItem("rhode_island_rooster_spawn_egg", SpawnEgg.RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG_FACTORY);
+    public static final Item RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG = registerItem("rhode_island_hen_spawn_egg", SpawnEgg.RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG_FACTORY);
+
 
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(Chicken.MOD_ID, name), item);
@@ -36,7 +39,8 @@ public class ModItems {
 
     private static void addItemsToIngredients(FabricItemGroupEntries entries) {
         entries.add(CHICKEN_LEG);
-        entries.add(RED_CHICKEN_SPAWN_EGG);
+        entries.add(RHODE_ISLAND_RED_ROOSTER_SPAWN_EGG);
+        entries.add(RHODE_ISLAND_HEN_CHICKEN_SPAWN_EGG);
     }
     public static void registerModItems() {
         Chicken.LOGGER.info("Registering items " + Chicken.MOD_ID);
