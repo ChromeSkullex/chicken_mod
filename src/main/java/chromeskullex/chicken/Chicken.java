@@ -3,7 +3,7 @@ package chromeskullex.chicken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import chromeskullex.chicken.entity.ModEntries;
+import chromeskullex.chicken.entity.MobEntries;
 import chromeskullex.chicken.item.ModItems;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -19,7 +19,8 @@ public class Chicken implements ModInitializer {
 		LOGGER.info("Initializing " + MOD_ID);
 
 		ModItems.registerModItems();
-		FabricDefaultAttributeRegistry.register(ModEntries.RED_CHICKEN, ChickenEntity.createChickenAttributes());
+		FabricDefaultAttributeRegistry.register(MobEntries.RHODE_ISLAND_HEN_CHICKEN, ChickenEntity.createChickenAttributes());
+		FabricDefaultAttributeRegistry.register(MobEntries.RHODE_ISLAND_ROOSTER_CHICKEN, ChickenEntity.createChickenAttributes());
 		
 
 	}

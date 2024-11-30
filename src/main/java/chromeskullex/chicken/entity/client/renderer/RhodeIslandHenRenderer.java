@@ -1,22 +1,22 @@
 package chromeskullex.chicken.entity.client.renderer;
 
 import chromeskullex.chicken.Chicken;
-import chromeskullex.chicken.entity.client.model.RedChickenModel;
-import chromeskullex.chicken.entity.custom.chicken.RedChickenEntity;
+import chromeskullex.chicken.entity.client.model.RhodeIslandHenModel;
+import chromeskullex.chicken.entity.custom.chicken.RhodeIslandRed.RhodeIslandHenEntity;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
-public class RedChickenRenderer extends GeoEntityRenderer<RedChickenEntity>{
+public class RhodeIslandHenRenderer extends GeoEntityRenderer<RhodeIslandHenEntity>{
 
 
-    public RedChickenRenderer(
+    public RhodeIslandHenRenderer(
             EntityRendererFactory.Context context){
-        super(context, new RedChickenModel());
+        super(context, new RhodeIslandHenModel());
     }
     
     @Override
-    public Identifier getTextureLocation(RedChickenEntity animatable){
+    public Identifier getTextureLocation(RhodeIslandHenEntity animatable){
         return new Identifier(Chicken.MOD_ID, "textures/entity/redchicken.png");
     }
         
