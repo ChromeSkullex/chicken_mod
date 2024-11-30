@@ -1,14 +1,14 @@
 package chromeskullex.chicken.entity.AI;
 
 import chromeskullex.chicken.Chicken;
-import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.BaseChickenEntity;
 import net.minecraft.entity.ai.goal.Goal;
 
 public class AIHunger extends Goal {
 
-    private final CustomChickenEntity chicken;
+    private final BaseChickenEntity chicken;
 
-    public AIHunger(CustomChickenEntity chicken) {
+    public AIHunger(BaseChickenEntity chicken) {
         this.chicken = chicken;
 
     }

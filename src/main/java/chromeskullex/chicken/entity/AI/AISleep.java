@@ -1,7 +1,7 @@
 package chromeskullex.chicken.entity.AI;
 
 import chromeskullex.chicken.Chicken;
-import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.BaseChickenEntity;
 
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
@@ -9,10 +9,10 @@ import net.minecraft.world.World;
 
 public class AISleep extends Goal {
 
-    private final CustomChickenEntity chicken;
+    private final BaseChickenEntity chicken;
     private final BlockPos blockPos;
 
-    public AISleep(CustomChickenEntity chicken, BlockPos pos) {
+    public AISleep(BaseChickenEntity chicken, BlockPos pos) {
         this.chicken = chicken;
         this.blockPos = pos;
     }

@@ -1,13 +1,13 @@
 package chromeskullex.chicken.entity.AI;
 
-import chromeskullex.chicken.entity.custom.chicken.CustomChickenEntity;
+import chromeskullex.chicken.entity.custom.chicken.BaseChickenEntity;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 
 public class AIWonderAround extends WanderAroundFarGoal {
-    private final CustomChickenEntity chicken;
+    private final BaseChickenEntity chicken;
 
 
-    public AIWonderAround(CustomChickenEntity mob, double d) {
+    public AIWonderAround(BaseChickenEntity mob, double d) {
         super(mob, d);
         this.chicken = mob;
 

@@ -32,7 +32,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 import java.util.Random;
 
 
-public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
+public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
     private static final Ingredient BREEDING_INGREDIENT;
     private static final Ingredient FEEDING_INGREDIENT;
     private static final int MAX_HUNGER = 100;
@@ -50,11 +50,6 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final Random RANDOM = new Random();
 
-//    protected static final RawAnimation WALK_ANIM = RawAnimation.begin().then("animation.model.walk", Animation.LoopType.LOOP);
-//    protected static final RawAnimation IDLE_ANIM = RawAnimation.begin().then("animation.model.idle", Animation.LoopType.LOOP);
-//    protected static final RawAnimation TAIL_ANIM = RawAnimation.begin().then("animation.model.idle_tail", Animation.LoopType.LOOP);
-//    protected static final RawAnimation FLAP_ANIM = RawAnimation.begin().then("animation.model.flapping", Animation.LoopType.LOOP);
-//    protected static final RawAnimation SLEEP_ANIM = RawAnimation.begin().then("animation.model.sleep", Animation.LoopType.LOOP);
     private ChickenAnimations currentAnimation = null;
     // Animation Variables
     private boolean tail = false;
@@ -128,14 +123,14 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
 
     }
 
-    protected <E extends CustomChickenEntity> PlayState moveController(final AnimationState<E> event) {
+    protected <E extends BaseChickenEntity> PlayState moveController(final AnimationState<E> event) {
         if (event.isMoving()) {
             currentAnimation = ChickenAnimations.WALK;
             return event.setAndContinue(currentAnimation.getAnimation());
         }
         return PlayState.STOP;
     }
-    protected <E extends CustomChickenEntity> PlayState idleController(final AnimationState<E> event) {
+    protected <E extends BaseChickenEntity> PlayState idleController(final AnimationState<E> event) {
         if (!event.isMoving() && !this.isSleeping()) {
             currentAnimation = ChickenAnimations.IDLE;
 
@@ -146,7 +141,7 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
         }
         return PlayState.STOP;
     }
-    protected <E extends CustomChickenEntity> PlayState tailController(final AnimationState<E> event) {
+    protected <E extends BaseChickenEntity> PlayState tailController(final AnimationState<E> event) {
         if (tail && !this.isSleeping()) {
             currentAnimation = ChickenAnimations.TAIL;
             decreaseTailLength();
@@ -154,14 +149,14 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
         }
         return PlayState.STOP;
     }
-    protected <E extends CustomChickenEntity> PlayState flappingController(final AnimationState<E> event) {
+    protected <E extends BaseChickenEntity> PlayState flappingController(final AnimationState<E> event) {
         if (isFlapping) {
             currentAnimation = ChickenAnimations.FLAP;
             return event.setAndContinue(currentAnimation.getAnimation());
         }
         return PlayState.STOP;
     }
-    protected <E extends CustomChickenEntity> PlayState sleepController(final AnimationState<E> event) {
+    protected <E extends BaseChickenEntity> PlayState sleepController(final AnimationState<E> event) {
         if (this.isSleeping()) {
 
             currentAnimation = ChickenAnimations.SLEEP;
@@ -181,7 +176,7 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
     }
 
     // Constructor
-    public CustomChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
+    public BaseChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
         super(entityType, world);
         this.world = world;
     }
@@ -297,7 +292,7 @@ public class CustomChickenEntity extends ChickenEntity implements GeoEntity {
         this.goalSelector.add(0, new AIHunger(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
         this.goalSelector.add(2, new AISleep(this, this.getBlockPos()));
-        this.goalSelector.add(3, new TemptGoal(this, 1.0, BREEDING_INGREDIENT, false));
+        this.goalSelector.add(3, new AITempGoal(this, 1.0, BREEDING_INGREDIENT, false));
         this.goalSelector.add(5, new AIWonderAround(this, 1.0));
         this.goalSelector.add(6, new AILookAtEntity(this, PlayerEntity.class, 6.0F));
         this.goalSelector.add(7, new AILookAroundGoal(this));
