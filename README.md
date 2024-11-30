@@ -4,8 +4,8 @@
     <img src="https://i.imgur.com/jbmZdOj.jpeg" alt="Family of Chickens"/>
     </p>
     <p align="center">
-    <img src="https://img.shields.io/github/directory-file-count/ChromeSkullex/chicken_mod?style=for-the-badge&color=yellow" alt="Release" height="20"/>
-    <img src="https://img.shields.io/github/commit-activity/w/ChromeSkullex/chicken_mod?style=for-the-badge&logo=github&color=yellow"alt="Commits" height="20"/>
+    <img src="https://img.shields.io/github/directory-file-count/ChromeSkullex/chicken_mod?style=for-the-badge&color=%23d4914e" alt="Release" height="20"/>
+    <img src="https://img.shields.io/github/commit-activity/w/ChromeSkullex/chicken_mod?style=for-the-badge&logo=github&color=%23d4914e"alt="Commits" height="20"/>
     </p>
     <p align="center">
         Skullex's Animal Husbandry is dedicated to creating an full experience for animal care and needs. It includes genetics, breeding, model reworks, animations, and realistic behaviors.
