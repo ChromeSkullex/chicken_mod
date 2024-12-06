@@ -407,7 +407,15 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
             return false;
         } else {
             Chicken.LOGGER.info("Can Breed, found mate!");
-            return this.isInLove() && other.isInLove();
+            return this.isInLove() && other.isInLove() && this.isOppositeGender(other);
+        }
+    }
+    public boolean isOppositeGender(BaseChickenEntity other) {
+        if (other == this) {
+            return false;
+        }
+        else{
+            return this.getEntityGender() != other.getEntityGender();
         }
     }
     /**
