@@ -1,16 +1,18 @@
 package chromeskullex.chicken.entity.custom.chicken;
 
+import java.util.Optional;
 import java.util.Random;
 
+import chromeskullex.chicken.Chicken;
+import chromeskullex.chicken.entity.AI.*;
+import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.stat.Stats;
+import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
-import chromeskullex.chicken.entity.AI.AIAging;
-import chromeskullex.chicken.entity.AI.AIHunger;
-import chromeskullex.chicken.entity.AI.AILookAroundGoal;
-import chromeskullex.chicken.entity.AI.AILookAtEntity;
-import chromeskullex.chicken.entity.AI.AISleep;
-import chromeskullex.chicken.entity.AI.AITempGoal;
-import chromeskullex.chicken.entity.AI.AIWonderAround;
 import chromeskullex.chicken.entity.MobEntries;
 import chromeskullex.chicken.entity.client.helpers.ChickenAnimations;
 import chromeskullex.chicken.entity.custom.chicken.RhodeIslandRed.RhodeIslandChickEntity;
@@ -56,9 +58,10 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
     public static final int MAX_AGE_TICK = 200;
     public static final int ADULT_AGE = 2;
 
-    // Indicates if the chicken is a child
+    // Chicken Logic
     private boolean isChild;
     public World world;
+    private int loveTicks;
 
     // Data tracking for various chicken states
     private static final TrackedData<Boolean> SLEEPING = DataTracker.registerData(BaseChickenEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -68,7 +71,7 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
     private static final TrackedData<Integer> GENDER = DataTracker.registerData(BaseChickenEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> AGE = DataTracker.registerData(BaseChickenEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> AGE_TICK = DataTracker.registerData(BaseChickenEntity.class, TrackedDataHandlerRegistry.INTEGER);
-
+    private static final TrackedData<Integer> LOVE_TICK = DataTracker.registerData(BaseChickenEntity.class, TrackedDataHandlerRegistry.INTEGER);
     // Animation instance cache for GeckoLib
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final Random RANDOM = new Random();
@@ -138,10 +141,18 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
             }
 
             this.flapProgress += this.flapSpeed * 2.0F;
+
         }
-
-
-
+        if (this.getLoveTicks() > 0){
+            Chicken.LOGGER.info("Logging love ticks {}", this.getLoveTicks());
+            this.setLoveTicks(this.getLoveTicks()-1);
+            if (this.getLoveTicks() % 10 == 0) {
+                double d = this.random.nextGaussian() * 0.02;
+                double e = this.random.nextGaussian() * 0.02;
+                double f = this.random.nextGaussian() * 0.02;
+                this.getWorld().addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+            }
+        }
 
     }
 
@@ -308,6 +319,12 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
             // Gets fed
             this.setHungerAmount(MAX_HUNGER);
             this.setHungerTick(MAX_HUNGER_TICK);
+            if (this.getHungerAmount() == 100 && !this.isChild){
+                this.eat(player, hand, itemStack);
+                Chicken.LOGGER.info("Chicken Is full and can breed and an adult");
+                this.setLoveTicks(600);
+            }
+
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
@@ -338,9 +355,85 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
         this.dataTracker.startTracking(GENDER, EntityGender.MALE.ordinal());
         this.dataTracker.startTracking(AGE, 0);
         this.dataTracker.startTracking(AGE_TICK, MAX_AGE_TICK);
+        this.dataTracker.startTracking(LOVE_TICK, 0);
     }
 
     // Getters and Setters
+
+
+
+    /**
+     * Sets the Love Ticks of the Entity
+     *
+     * @param loveTicks  amount of love ticks
+     */
+
+    public void setLoveTicks(int loveTicks) {
+        this.dataTracker.set(LOVE_TICK, loveTicks);
+    }
+
+    /**
+     * Gets the Love ticks of the entity
+     *
+     * @return The Love Ticks of the entity.
+     */
+    public int getLoveTicks() {
+        return this.dataTracker.get(LOVE_TICK);
+    }
+    /**
+     * Checks to see if the entity is In Love to Breed
+     *
+     * @return True or False
+    **/
+    public boolean isInLove() {
+//        Chicken.LOGGER.info("Chicken Is in love");
+        return  this.getLoveTicks() > 0;
+    }
+    /**
+     * Resets the Love Ticks
+     **/
+    public void resetLoveTicks() {
+        this.dataTracker.set(LOVE_TICK, 0);
+    }
+
+    /**
+     *  Checks to see if Animal can breed with the other
+     * @param other: Other Entity
+     * @return True or False
+     *
+     * **/
+    public boolean canBreedWith(BaseChickenEntity other) {
+        if (other == this) {
+            return false;
+        } else {
+            Chicken.LOGGER.info("Can Breed, found mate!");
+            return this.isInLove() && other.isInLove();
+        }
+    }
+    /**
+     * Breeds the two animals
+     * @param world: server world
+     * @param mate: Other Entity
+     * @return True or False
+     *
+     * **/
+
+    public void breed(ServerWorld world, BaseChickenEntity mate) {
+        RhodeIslandChickEntity childEntity = this.createChild(world, mate);
+        if (childEntity != null) {
+            childEntity.setAgeTick(0);
+            childEntity.setChild(true);
+            childEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+            this.breed(world, mate, childEntity);
+            world.spawnEntityAndPassengers(childEntity);
+        }
+            Chicken.LOGGER.info("Breeding {} with {}", this.getEntityGender().name(), mate.getEntityGender().name());
+            this.resetLoveTicks();
+            mate.resetLoveTicks();
+
+
+    }
+
 
     /**
      * Returns the gender of the entity.
@@ -430,6 +523,10 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
      */
     public boolean isChild() {
         return this.isChild;
+    }
+
+    public void setChild(boolean isChild) {
+        this.isChild = isChild;
     }
 
     /**
@@ -592,8 +689,10 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
         this.goalSelector.add(0, new AIAging(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4));
         this.goalSelector.add(2, new AISleep(this, this.getBlockPos()));
-        this.goalSelector.add(3, new AITempGoal(this, 1.0, BREEDING_INGREDIENT, false));
-        this.goalSelector.add(5, new AIWonderAround(this, 1.0));
+        this.goalSelector.add(3, new AIMate(this, world));
+
+        this.goalSelector.add(4, new AITempGoal(this, 1.0, BREEDING_INGREDIENT, false));
+        this.goalSelector.add(5, new AIWanderAround(this, 1.0));
         this.goalSelector.add(6, new AILookAtEntity(this, PlayerEntity.class, 6.0F));
         this.goalSelector.add(7, new AILookAroundGoal(this));
     }
@@ -616,7 +715,7 @@ public class BaseChickenEntity extends ChickenEntity implements GeoEntity {
     @Override
     @Nullable
     public RhodeIslandChickEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
-//        return (RhodeIslandChickEntity) MobEntries.RHODE_ISLAND_CHICK_CHICKEN.create(serverWorld);
-        return null;
+
+        return (RhodeIslandChickEntity) MobEntries.RHODE_ISLAND_CHICK_CHICKEN.create(serverWorld);
     }
 }

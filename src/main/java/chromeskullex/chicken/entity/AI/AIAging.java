@@ -17,9 +17,7 @@ public class AIAging extends Goal {
 
         // if the chicken is 24000 ticks old, then add 1
         this.chicken.decreaseAgeTick();
-        Chicken.LOGGER.info("Aging " + this.chicken.getAgeTick() + " ticks");
-
-
+//        Chicken.LOGGER.info("Aging " + this.chicken.getAgeTick() + " ticks");
         return this.chicken.getAgeTick() <= 0;
     }
 
