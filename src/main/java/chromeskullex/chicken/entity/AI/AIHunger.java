@@ -17,7 +17,6 @@ public class AIHunger extends Goal {
     public boolean canStart() {
         this.chicken.decreaseHungerTick();
 
-        Chicken.LOGGER.info("Chicken Started {}", this.chicken.getHungerTick());
         return this.chicken.getHungerTick() <= 0;
     }
 
@@ -28,7 +27,6 @@ public class AIHunger extends Goal {
 
     @Override
     public void start() {
-//        Chicken.LOGGER.info("Chicken Hunger {}", this.chicken.getHungerAmount());
 
         this.chicken.setHungerTick(this.chicken.getMaxHungerTick());
         this.chicken.decreaseHungerAmount();

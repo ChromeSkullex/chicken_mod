@@ -21,7 +21,8 @@ public class Chicken implements ModInitializer {
 		ModItems.registerModItems();
 		FabricDefaultAttributeRegistry.register(MobEntries.RHODE_ISLAND_HEN_CHICKEN, ChickenEntity.createChickenAttributes());
 		FabricDefaultAttributeRegistry.register(MobEntries.RHODE_ISLAND_ROOSTER_CHICKEN, ChickenEntity.createChickenAttributes());
-		
+		FabricDefaultAttributeRegistry.register(MobEntries.RHODE_ISLAND_CHICK_CHICKEN, ChickenEntity.createChickenAttributes());
+
 
 	}
 }

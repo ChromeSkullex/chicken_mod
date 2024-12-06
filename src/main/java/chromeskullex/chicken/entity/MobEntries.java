@@ -1,5 +1,6 @@
 package chromeskullex.chicken.entity;
 import chromeskullex.chicken.Chicken;
+import chromeskullex.chicken.entity.custom.chicken.RhodeIslandRed.RhodeIslandChickEntity;
 import chromeskullex.chicken.entity.custom.chicken.RhodeIslandRed.RhodeIslandHenEntity;
 import chromeskullex.chicken.entity.custom.chicken.RhodeIslandRed.RhodeIslandRoosterEntity;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
@@ -13,15 +14,11 @@ import net.minecraft.util.Identifier;
 
 
 public class MobEntries {
-public static EntityType<RhodeIslandHenEntity> RHODE_ISLAND_HEN_CHICKEN;
+    public static EntityType<RhodeIslandHenEntity> RHODE_ISLAND_HEN_CHICKEN;
     public static EntityType<RhodeIslandRoosterEntity> RHODE_ISLAND_ROOSTER_CHICKEN;
+    public static EntityType<RhodeIslandChickEntity> RHODE_ISLAND_CHICK_CHICKEN;
 
     static {
-//        RED_CHICKEN = Registry.register(
-//                Registries.ENTITY_TYPE,
-//                new Identifier(Chicken.MOD_ID, "red_chicken"),
-//                FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RedChickenEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.7F)).build()
-//        );
         RHODE_ISLAND_HEN_CHICKEN = Registry.register(
                 Registries.ENTITY_TYPE,
                 new Identifier(Chicken.MOD_ID, "rhode_island_hen_chicken"),
@@ -31,6 +28,11 @@ public static EntityType<RhodeIslandHenEntity> RHODE_ISLAND_HEN_CHICKEN;
                 Registries.ENTITY_TYPE,
                 new Identifier(Chicken.MOD_ID, "rhode_island_rooster_chicken"),
                 FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RhodeIslandRoosterEntity::new).dimensions(EntityDimensions.fixed(0.4F, 0.7F)).build()
+        );
+        RHODE_ISLAND_CHICK_CHICKEN = Registry.register(
+                Registries.ENTITY_TYPE,
+                new Identifier(Chicken.MOD_ID, "rhode_island_chick_chicken"),
+                FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, RhodeIslandChickEntity::new).dimensions(EntityDimensions.fixed(0.2F, 0.35F)).build()
         );
 
     }
